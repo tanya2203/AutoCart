@@ -106,6 +106,7 @@ exports.deleteBanner = async (req, res) => {
 
         if (data.bannerImage.length > 0) {
             for (i = 0; i < data.bannerImage.length; i++) {
+                console.log('Processing image:', data.bannerImage[i]);
                 if (data.bannerImage[i].path === bannerPath) {
                     // Check if the filename property exists
                     if (data.bannerImage[i].filename) {
@@ -117,6 +118,7 @@ exports.deleteBanner = async (req, res) => {
                         data.bannerImage.splice(i, 1);
                         break;
                     } else {
+                        console.log('Filename not found for banner image:', data.bannerImage[i]);
                         return res.status(500).json({ code: 200, status: 0, message: 'Filename not found for banner image', data: {} });
                     }
                 }
@@ -137,6 +139,7 @@ exports.deleteBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 
 exports.addTodayDeal = async(req,res) => {
