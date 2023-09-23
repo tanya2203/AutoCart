@@ -90,13 +90,19 @@ exports.addBanner = async (req, res) => {
     }
 };
 
-
 exports.deleteBanner = async (req, res) => {
     try {
         let bannerPath = req.body.bannerPath;
         const data = await Dashboard.findOne({});
+
+        if (!data) {
+            // Handle the case where there is no Dashboard document (data is null)
+            // You can create a new Dashboard document or return an appropriate response.
+            // Example:
+            return res.status(401).json({ code: 200, status: 0, message: 'Dashboard not found', data: {} });
+        }
+
         if (data.bannerImage.length > 0) {
-console.log(data.bannerImage[i].filename)
             for (let i = 0; i < data.bannerImage.length; i++) {
                 if (data.bannerImage[i].path === bannerPath) {
                     // Check if the filename property exists
@@ -129,6 +135,7 @@ console.log(data.bannerImage[i].filename)
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 
 
