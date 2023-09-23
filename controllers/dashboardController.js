@@ -89,35 +89,47 @@ exports.addBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
-exports.deleteBanner = async(req,res) => {
-    try{
-        let bannerPath = req.body.bannerPath
-        const data = await Dashboard.findOne({})
-        
-        if(data.bannerImage!=""){
-            data.bannerImage.forEach((obj)=>{
-                console.log(obj.path)
-                if(obj.path == bannerPath){
-                    fs.unlinkSync("../public/banner_images/"+obj.filename)
-                }
-            })
+exports.deleteBanner = async (req, res) => {
+    try {
+        const bannerPath = req.body.bannerPath;
+        const data = await Dashboard.findOne({});
+
+        if (!data) {
+            return res.status(404).json({ status: 0, message: 'Dashboard data not found' });
         }
-        for(var i in data.bannerImage){
-            if(data.bannerImage[i].path== bannerPath){
-                data.bannerImage.splice(i,1);
+
+        let fileDeleted = false;
+        for (let i = 0; i < data.bannerImage.length; i++) {
+            const obj = data.bannerImage[i];
+            if (obj.path === bannerPath) {
+                const filePath = path.join(__dirname, '../public/banner_images/', obj.filename);
+                try {
+                    fs.unlinkSync(filePath);
+                    fileDeleted = true;
+                } catch (unlinkError) {
+                    console.error('Error deleting file:', unlinkError);
+                }
+                data.bannerImage.splice(i, 1);
                 break;
             }
         }
-        let deleteImg = await data.save()
-        if(deleteImg != ""){
-        	return res.status(200).json({status:1, message:'Banner Images deleted Succesfully'})
-        }else{
-        	return res.status(401).json({ code:200,status:0,message : "Try Again ",data : {} })
+
+        if (fileDeleted) {
+            const saveImg = await data.save();
+            if (saveImg) {
+                return res.status(200).json({ status: 1, message: 'Banner Image deleted successfully' });
+            } else {
+                return res.status(500).json({ status: 0, message: 'Error saving dashboard data after deletion' });
+            }
+        } else {
+            return res.status(404).json({ status: 0, message: 'Banner Image not found in data' });
         }
-    }catch(error){
-        console.log(error)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 
 exports.addTodayDeal = async(req,res) => {
