@@ -98,7 +98,7 @@ exports.deleteBanner = async(req,res) => {
             data.bannerImage.forEach((obj)=>{
                 console.log(obj.path)
                 if(obj.path == bannerPath){
-                    fs.unlinkSync("/public/banner_images/"+obj.filename)
+                    fs.unlinkSync("../public/banner_images/"+obj.filename)
                 }
             })
         }
