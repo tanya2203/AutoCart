@@ -95,8 +95,8 @@ exports.deleteBanner = async (req, res) => {
     try {
         let bannerPath = req.body.bannerPath;
         const data = await Dashboard.findOne({});
-
         if (data.bannerImage.length > 0) {
+console.log(data.bannerImage[i].filename)
             for (let i = 0; i < data.bannerImage.length; i++) {
                 if (data.bannerImage[i].path === bannerPath) {
                     // Check if the filename property exists
