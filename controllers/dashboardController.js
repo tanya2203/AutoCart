@@ -91,36 +91,40 @@ exports.addBanner = async (req, res) => {
 };
 
 
+exports.deleteBanner = async (req, res) => {
+    try {
+        let bannerPath = req.body.bannerPath;
+        const data = await Dashboard.findOne({});
 
-exports.deleteBanner = async(req,res) => {
-    try{
-        let bannerPath = req.body.bannerPath
-        const data = await Dashboard.findOne({})
-        
-        if(data.bannerImage!=""){
-            data.bannerImage.forEach((obj)=>{
-                console.log(obj.path)
-                if(obj.path == bannerPath){
-                    fs.unlinkSync("../public/banner_images/"+obj.filename)
+        if (data.bannerImage.length > 0) {
+            for (let i = 0; i < data.bannerImage.length; i++) {
+                if (data.bannerImage[i].path === bannerPath) {
+                    // Delete the file using an absolute path
+                    const filePathToDelete = path.join(__dirname, '../public/banner_images', data.bannerImage[i].filename);
+                    fs.unlinkSync(filePathToDelete);
+
+                    // Remove the item from the array
+                    data.bannerImage.splice(i, 1);
+                    break;
                 }
-            })
-        }
-        for(var i in data.bannerImage){
-            if(data.bannerImage[i].path== bannerPath){
-                data.bannerImage.splice(i,1);
-                break;
             }
+
+            let deleteImg = await data.save();
+
+            if (deleteImg) {
+                return res.status(200).json({ status: 1, message: 'Banner Image deleted successfully' });
+            } else {
+                return res.status(401).json({ code: 200, status: 0, message: 'Try Again', data: {} });
+            }
+        } else {
+            return res.status(401).json({ code: 200, status: 0, message: 'Banner Image not found', data: {} });
         }
-        let deleteImg = await data.save()
-        if(deleteImg != ""){
-        	return res.status(200).json({status:1, message:'Banner Images deleted Succesfully'})
-        }else{
-        	return res.status(401).json({ code:200,status:0,message : "Try Again ",data : {} })
-        }
-    }catch(error){
-        console.log(error)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 exports.addTodayDeal = async(req,res) => {
     try{
