@@ -99,13 +99,18 @@ exports.deleteBanner = async (req, res) => {
         if (data.bannerImage.length > 0) {
             for (let i = 0; i < data.bannerImage.length; i++) {
                 if (data.bannerImage[i].path === bannerPath) {
-                    // Delete the file using an absolute path
-                    const filePathToDelete = path.join(__dirname, '../public/banner_images', data.bannerImage[i].filename);
-                    fs.unlinkSync(filePathToDelete);
+                    // Check if the filename property exists
+                    if (data.bannerImage[i].filename) {
+                        // Delete the file using an absolute path
+                        const filePathToDelete = path.join(__dirname, '../public/banner_images', data.bannerImage[i].filename);
+                        fs.unlinkSync(filePathToDelete);
 
-                    // Remove the item from the array
-                    data.bannerImage.splice(i, 1);
-                    break;
+                        // Remove the item from the array
+                        data.bannerImage.splice(i, 1);
+                        break;
+                    } else {
+                        return res.status(500).json({ code: 200, status: 0, message: 'Filename not found for banner image', data: {} });
+                    }
                 }
             }
 
@@ -124,6 +129,7 @@ exports.deleteBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 
 exports.addTodayDeal = async(req,res) => {
