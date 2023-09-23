@@ -74,7 +74,8 @@ exports.addBanner = async (req, res) => {
                 data.bannerImage = [];
             }
 
-            data.bannerImage.push({ path: dbFilePath });
+            // Add the image data with the filename property
+            data.bannerImage.push({ path: dbFilePath, filename: fileName });
         }
 
         const saveImg = await data.save();
@@ -89,6 +90,7 @@ exports.addBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 exports.deleteBanner = async (req, res) => {
     try {
         const bannerPath = req.body.bannerPath;
