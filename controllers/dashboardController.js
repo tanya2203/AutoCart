@@ -102,15 +102,19 @@ exports.deleteBanner = async (req, res) => {
         for (let i = 0; i < data.bannerImage.length; i++) {
             const obj = data.bannerImage[i];
             if (obj.path === bannerPath) {
-                const filePath = path.join(__dirname, '../public/banner_images/', obj.filename);
-                try {
-                    fs.unlinkSync(filePath);
-                    fileDeleted = true;
-                } catch (unlinkError) {
-                    console.error('Error deleting file:', unlinkError);
+                if (obj.filename) { // Check if filename is defined
+                    const filePath = path.join(__dirname, '../public/banner_images', obj.filename);
+                    try {
+                        fs.unlinkSync(filePath);
+                        fileDeleted = true;
+                    } catch (unlinkError) {
+                        console.error('Error deleting file:', unlinkError);
+                    }
+                    data.bannerImage.splice(i, 1);
+                    break;
+                } else {
+                    console.error('Filename is undefined for the banner image:', obj);
                 }
-                data.bannerImage.splice(i, 1);
-                break;
             }
         }
 
@@ -129,6 +133,7 @@ exports.deleteBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 
 
