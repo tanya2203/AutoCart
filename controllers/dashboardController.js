@@ -102,8 +102,10 @@ exports.deleteBanner = async (req, res) => {
             return res.status(401).json({ code: 200, status: 0, message: 'Dashboard not found', data: {} });
         }
 
+        let i; // Declare i outside the loop
+
         if (data.bannerImage.length > 0) {
-            for (let i = 0; i < data.bannerImage.length; i++) {
+            for (i = 0; i < data.bannerImage.length; i++) {
                 if (data.bannerImage[i].path === bannerPath) {
                     // Check if the filename property exists
                     if (data.bannerImage[i].filename) {
@@ -135,8 +137,6 @@ exports.deleteBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
-
-
 
 
 exports.addTodayDeal = async(req,res) => {
