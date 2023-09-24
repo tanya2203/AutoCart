@@ -109,22 +109,30 @@ exports.deleteBanner = async (req, res) => {
                     try {
                         fs.unlinkSync(filePath);
                         fileDeleted = true;
+                        // Remove the deleted banner from the data
+                        data.bannerImage.splice(i, 1);
+                        break;
                     } catch (unlinkError) {
                         console.error('Error deleting file:', unlinkError);
+                        return res.status(500).json({ status: 0, message: 'Error deleting file' });
                     }
-                    data.bannerImage.splice(i, 1);
-                    break;
                 } else {
                     console.error('Filename is undefined for the banner image:', obj);
+                    return res.status(500).json({ status: 0, message: 'Filename is undefined' });
                 }
             }
         }
 
         if (fileDeleted) {
-            const saveImg = await data.save();
-            if (saveImg) {
-                return res.status(200).json({ status: 1, message: 'Banner Image deleted successfully' });
-            } else {
+            try {
+                const saveImg = await data.save();
+                if (saveImg) {
+                    return res.status(200).json({ status: 1, message: 'Banner Image deleted successfully' });
+                } else {
+                    return res.status(500).json({ status: 0, message: 'Error saving dashboard data after deletion' });
+                }
+            } catch (saveError) {
+                console.error('Error saving dashboard data:', saveError);
                 return res.status(500).json({ status: 0, message: 'Error saving dashboard data after deletion' });
             }
         } else {
@@ -135,6 +143,7 @@ exports.deleteBanner = async (req, res) => {
         return res.status(500).json({ status: 0, message: 'Internal Server Error' });
     }
 };
+
 
 
 
