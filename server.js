@@ -2,7 +2,14 @@ const express = require("express");
 const cors = require('cors');
 const app = express();
 // Allow requests from http://localhost:3000
-app.use(cors({ origin: 'http://localhost:3000' }));
+// Define the allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://automobile-tools-vinayrinait.vercel.app/'
+];
+
+// Configure CORS with a function that checks the origin against the allowed origins
+
 var mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 const path = require('path')
@@ -27,7 +34,16 @@ app.use(session({
   //   expires: 600000
   // }
 }));
-
+app.use(cors({
+  origin: function (origin, callback) {
+    // Check if the origin is in the allowedOrigins array or if it's undefined (for same-origin requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true); // Allow the request
+    } else {
+      callback(new Error('Not allowed by CORS')); // Deny the request
+    }
+  }
+}));
 app.use(express.static(path.join(__dirname, 'public')))
 app.use('/img',express.static('img'))
 // app.set('views', path.join(__dirname, 'views'));
